@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h3 {
+            margin-top: 30px;
+        }
+        form {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+        }
+        button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 20px;
+        }
+        strong {
+            font-weight: bold;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, {{ username }}</h2>
+        <h3>Add Questions and Answers</h3>
+        <form method="post">
+            <label for="question">Question:</label>
+            <input type="text" id="question" name="question" required><br>
+            <label for="answer">Answer:</label>
+            <textarea id="answer" name="answer" rows="4" required></textarea><br>
+            <button type="submit">Add Question and Answer</button>
+        </form>
+        <h3>Previously Added Questions and Answers</h3>
+        <ul>
+            {% for qa in questions_answers %}
+                <li>
+                    <strong>{{ qa.question }}</strong><br>
+                    {{ qa.answer }}
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>
