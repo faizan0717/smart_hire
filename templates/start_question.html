@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .instruction {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ question }}</h1>
+        <form id="answerForm" method="POST">
+            <!-- Add your form elements here for answering the question -->
+            <button type="submit">Submit Answer</button>
+            <div class="loading" id="loadingDiv">
+                <img src="{{ url_for('static', filename='Loading_icon.gif') }}" alt="Loading">
+            </div>
+        </form>
+        <div class="instruction">
+            <p>Click the "Submit Answer" button to save your answer.</p>
+            <p>Please provide your answer in the video format.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('answerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            // Show loading animation
+            document.getElementById('loadingDiv').style.display = 'block';
+
+            // Simulate a delay for demonstration purposes (replace this with your actual AJAX request)
+            setTimeout(() => {
+                // Hide loading animation
+                document.getElementById('loadingDiv').style.display = 'none';
+                
+                // Get the question ID from the URL
+                const questionId = window.location.pathname.split('/').pop();
+                
+                // Add your function call or AJAX request here
+                // For example, you can make an AJAX request to a Flask route
+                // Replace '/your-flask-route' with the actual route you want to call
+                fetch('/start_questuioning/' + questionId, {
+                    method: 'POST',
+                    body: new FormData(this)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Handle success
+                        console.log('Function called successfully');
+                    } else {
+                        // Handle error
+                        console.error('Failed to call function');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }, 2000); // Simulated delay of 2 seconds
+        });
+    </script>
+</body>
+</html>

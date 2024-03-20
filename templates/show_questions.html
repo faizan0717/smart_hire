@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome, Employee</title>
+    <title>Questions for {{ employer_name }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
         }
 
         .container {
-            text-align: center;
-            background-color: #fff;
+            max-width: 800px;
+            margin: 20px auto;
             padding: 20px;
+            background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             color: #333;
+            text-align: center;
         }
 
-        p {
-            color: #666;
-            margin-bottom: 20px;
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
         }
 
         a {
@@ -42,21 +43,16 @@
         a:hover {
             text-decoration: underline;
         }
-
-        img {
-            width: 150px;
-            height: 150px;
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="https://source.unsplash.com/150x150/?mountain" alt="Mountain Landscape">
-
-        <h1>Welcome, {{ username }}</h1>
-        <p>You are logged in as an employee.</p>
-        <p><a href="{{ url_for('list_employers') }}">View Employers</a></p>
+        <h1>Questions for {{ employer_name }}</h1>
+        <ul>
+            {% for question_answer in questions_answers %}
+                <li>{{ question_answer.question }} <a href="{{ url_for('start_question', question_id=question_answer.id) }}">Start</a></li>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 </html>
