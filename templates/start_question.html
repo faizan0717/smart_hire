@@ -86,7 +86,7 @@
             
             // Show loading animation
             document.getElementById('loadingDiv').style.display = 'block';
-
+    
             // Simulate a delay for demonstration purposes (replace this with your actual AJAX request)
             setTimeout(() => {
                 // Hide loading animation
@@ -98,7 +98,7 @@
                 // Add your function call or AJAX request here
                 // For example, you can make an AJAX request to a Flask route
                 // Replace '/your-flask-route' with the actual route you want to call
-                fetch('/start_questuioning/' + questionId, {
+                fetch('/start_questioning/' + questionId, {
                     method: 'POST',
                     body: new FormData(this)
                 })
@@ -106,8 +106,12 @@
                     if (response.ok) {
                         // Handle success
                         console.log('Function called successfully');
+                        // Redirect to previous page
+                        window.alert('Answer submitted successfully.');
+                        window.history.back();
                     } else {
                         // Handle error
+                        window.alert('Failed to submit answer.');
                         console.error('Failed to call function');
                     }
                 })
@@ -117,5 +121,6 @@
             }, 2000); // Simulated delay of 2 seconds
         });
     </script>
+    
 </body>
 </html>

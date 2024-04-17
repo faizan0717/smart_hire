@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             margin: 0;
             padding: 0;
         }
+
         .container {
             width: 600px;
             margin: 50px auto;
@@ -19,22 +21,27 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             text-align: center;
             margin-bottom: 20px;
         }
+
         h3 {
             margin-top: 30px;
         }
+
         form {
             width: 100%;
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             font-weight: bold;
             margin-bottom: 5px;
         }
+
         input[type="text"],
         textarea {
             width: calc(100% - 20px);
@@ -44,9 +51,11 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
+
         textarea {
             resize: vertical;
         }
+
         button {
             width: calc(100% - 20px);
             padding: 10px;
@@ -57,19 +66,24 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         ul {
             list-style: none;
             padding: 0;
         }
+
         li {
             margin-bottom: 20px;
         }
+
         strong {
             font-weight: bold;
         }
+
         a {
             display: block;
             text-align: center;
@@ -79,27 +93,40 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h2>Welcome, {{ username }}</h2>
         <h3>Add Questions and Answers</h3>
-        <form method="post">
+        <form method="post" action="{{ url_for('add_question_answer') }}">
             <label for="question">Question:</label>
             <input type="text" id="question" name="question" required><br>
             <label for="answer">Answer:</label>
             <textarea id="answer" name="answer" rows="4" required></textarea><br>
             <button type="submit">Add Question and Answer</button>
         </form>
+        {% if questions_answers %}
+        {% for qa in questions_answers[:1] %} {# Slice the list to get only the first element #}
+        <form method="post" action="{{ url_for('view_employye_results', employer_id=qa.employer.id) }}">
+            <button type="submit">View Employee Results</button>
+        </form>
+        {% endfor %}
+        {% endif %}
+
         <h3>Previously Added Questions and Answers</h3>
         <ul>
             {% for qa in questions_answers %}
-                <li>
-                    <strong>{{ qa.question }}</strong><br>
-                    {{ qa.answer }}
-                </li>
+            <li>
+                <strong>{{ qa.question }}</strong><br>
+                {{ qa.answer }}
+                <form method="post" action="{{ url_for('delete_question', question_id=qa.id) }}">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
             {% endfor %}
         </ul>
         <a href="{{ url_for('logout') }}">Logout</a>
     </div>
 </body>
+
 </html>
