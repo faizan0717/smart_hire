@@ -22,22 +22,48 @@
         }
         h1 {
             color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
         }
         .btn {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 24px;
             margin: 10px;
             border: none;
             border-radius: 5px;
             background-color: #007bff;
             color: #fff;
             text-decoration: none;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
         .btn:hover {
             background-color: #0056b3;
+        }
+        .features {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .feature {
+            flex: 1;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .feature h2 {
+            color: #333;
+        }
+        .feature p {
+            color: #666;
         }
     </style>
 </head>
@@ -47,6 +73,21 @@
         <p>The smart way to hire and get hired</p>
         <a href="/login" class="btn">Login</a>
         <a href="/register" class="btn">Register</a>
+        
+        <div class="features">
+            <div class="feature">
+                <h2>Find the Perfect Candidate</h2>
+                <p>Access a large pool of talented candidates with advanced search filters.</p>
+            </div>
+            <div class="feature">
+                <h2>Streamline Your Hiring Process</h2>
+                <p>Manage job postings, applications, and interviews efficiently.</p>
+            </div>
+            <div class="feature">
+                <h2>Get Matched with Ideal Jobs</h2>
+                <p>Discover job opportunities tailored to your skills and preferences.</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>

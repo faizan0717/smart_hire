@@ -7,12 +7,17 @@ import pyaudio
 import wave
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import json
+from flask_migrate import Migrate
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///example.db'
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,6 +39,8 @@ class QuestionResult(db.Model):
     sentiment_result = db.Column(db.Text, nullable=False)  # Storing the sentiment result as a text field
     question = db.Column(db.Text,nullable=False)
     number_of_people = db.Column(db.Integer,nullable=False)
+    matching = db.Column(db.Integer,nullable=False)
+    recived_answer = db.Column(db.Text,nullable=False)
 
 
 @app.route('/')
@@ -150,8 +157,17 @@ def handle_ajax_request(question_id):
             number_of_people = count_people_in_video(file_name)
             print(number_of_people)
             if transcription:
+                print(transcription)
+                matching = 0
+                keywords_to_look_for = []
+                if question.answer: 
+                    keywords_to_look_for = question.answer.split(",")
+                    for keyword in keywords_to_look_for:
+                        if keyword in transcription:
+                            matching+=1
+                print(matching)
                 sentiment_result = analyze_sentiment(transcription)
-                new_result = QuestionResult(user_name=session['username'], employer_id=employer_id, sentiment_result=json.dumps(sentiment_result),question=question.question,number_of_people=number_of_people)
+                new_result = QuestionResult(user_name=session['username'], employer_id=employer_id, sentiment_result=json.dumps(sentiment_result),question=question.question,number_of_people=number_of_people,matching = matching,recived_answer = transcription)
                 db.session.add(new_result)
                 db.session.commit()
                 
@@ -207,10 +223,106 @@ def view_employye_results(employer_id):
     
     # Group the results by user name
     results_by_user = {}
+    chart_options_by_user =  {
+        "title": {
+            "text": 'Confidence'
+        },
+        "tooltip": {
+            "trigger": 'axis'
+        },
+        "toolbox": {
+            "feature": {
+            "saveAsImage": {}
+            }
+        },
+        "xAxis": {
+            "type": 'category',
+            "data": []
+        },
+        "yAxis": {
+            "type": 'value'
+        },
+        "series": [
+            {
+            "name": 'Negative',
+            "type": 'line',
+            "stack": 'Total',
+            "data": []
+            },
+            {
+            "name": 'Neutral',
+            "type": 'line',
+            "stack": 'Total',
+            "data": []
+            },
+            {
+            "name": 'Positive',
+            "type": 'line',
+            "stack": 'Total',
+            "data": []
+            },
+            {
+            "name": 'Compound',
+            "type": 'line',
+            "stack": 'Total',
+            "data": []
+            },
+        ]
+        }
+        
+    answer_score  = {
+    "xAxis": {
+        "type": 'category',
+        "data": []
+    },
+    "title": {
+            "text": 'Answer Accurecy'
+        },
+    "yAxis": {
+        "type": 'value'
+    },
+    "toolbox": {
+            "feature": {
+            "saveAsImage": {}
+            }
+        },
+    "series": [
+        {
+        "data": [],
+        "type": 'bar'
+        }
+    ]
+    }
+
+    questions_map = {}
     for result in results:
-        if result.user_name not in results_by_user : results_by_user.setdefault(result.user_name,[])
-        results_by_user[result.user_name].append(result)
-        print(result.number_of_people)
+        if result.user_name not in results_by_user : 
+            results_by_user.setdefault(result.user_name,{"result":[],"chartoptions":chart_options_by_user,'answer_chart':answer_score})
+            questions_map[result.user_name]=[]
+        if result.question not in questions_map[result.user_name]:
+            questions_map[result.user_name].append(result.question)
+            question = f"Question{len(results_by_user[result.user_name]["chartoptions"]['xAxis']["data"])+1}"
+            if question not in results_by_user[result.user_name]["chartoptions"]['xAxis']["data"]:
+                results_by_user[result.user_name]["answer_chart"]['xAxis']["data"].append(question)
+                results_by_user[result.user_name]["chartoptions"]['xAxis']["data"].append(question)
+                results_by_user[result.user_name]["result"].append(result)
+                sr = json.loads(result.sentiment_result)
+                for series in results_by_user[result.user_name]["chartoptions"]["series"]:
+                    if series["name"] == "Negative":
+                        series["data"].append(sr["neg"])
+                    elif series["name"] == "Neutral":
+                        series["data"].append(sr["neu"])
+                    elif series["name"] == "Positive":
+                        series["data"].append(sr["pos"])
+                    elif series["name"] == "Compound":
+                        series["data"].append(sr["compound"])
+                if result.number_of_people > 1:
+                    results_by_user[result.user_name]["answer_chart"]["series"][0]["data"].append({"value": result.matching,"itemStyle": {"color": '#a90000'}})
+                else:
+                    results_by_user[result.user_name]["answer_chart"]["series"][0]["data"].append(result.matching)
+                        
+
+    print(">>>",results_by_user)
     return render_template('view_results.html', results_by_user=results_by_user)
 
 
@@ -312,6 +424,33 @@ def add_question_answer():
             db.session.commit()
             return redirect(url_for('profile'))
     return redirect(url_for('login'))
+
+
+@app.route('/send-mail-to-employee', methods=['POST'])
+def send_mail_to_employee():
+    if 'username' in session:
+        receiver_email = request.form['username']  # Assuming username is the email address of the receiver
+        sender_email = 'your_email@example.com'  # Your email address
+        password = 'your_email_password'  # Your email password
+        
+        subject = 'Congratulations you have been selected. '
+        message_body = 'Please contact 9658423576 for further details.'
+
+        # Create a MIMEText object
+        message = MIMEMultipart()
+        message['From'] = sender_email
+        message['To'] = receiver_email
+        message['Subject'] = subject
+        message.attach(MIMEText(message_body, 'plain'))
+
+        # Connect to the SMTP server
+        with smtplib.SMTP_SSL('smtp.example.com', 465) as server:  # Update SMTP server details
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+
+        return 'Email sent successfully'
+    else:
+        return 'Unauthorized', 401
 
 
 if __name__ == '__main__':

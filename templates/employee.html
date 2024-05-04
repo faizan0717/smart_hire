@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome, Employee</title>
     <style>
-        body {
+        .body-class {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             margin: 0;
@@ -51,6 +51,15 @@
     </style>
 </head>
 <body>
+    <div style="background-color: #333; padding: 10px; display: flex; justify-content: space-between;">
+        <span style="color: #fff;">Smart Hire</span>
+        <div>
+            <a href="http://localhost:5000/">
+                <button style="background-color: #007bff; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Logout</button>
+            </a>
+        </div>
+    </div>
+    <div class="body-class">
     <div class="container">
         <img src="https://source.unsplash.com/150x150/?mountain" alt="Mountain Landscape">
 
@@ -58,5 +67,6 @@
         <p>You are logged in as an employee.</p>
         <p><a href="{{ url_for('list_employers') }}">View Employers</a></p>
     </div>
+</div>
 </body>
 </html>
