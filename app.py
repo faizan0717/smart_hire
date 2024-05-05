@@ -351,7 +351,7 @@ def video_to_text(audio_path):
     except Exception as e:
         return f"Error: {str(e)}"
 
-def record_video_with_audio(file_name, duration=10, frame_width=640, frame_height=480):
+def record_video_with_audio(file_name, duration=100000, frame_width=640, frame_height=480):
     # Initialize video capture from webcam
     video_capture = cv2.VideoCapture(0)
 
@@ -370,7 +370,7 @@ def record_video_with_audio(file_name, duration=10, frame_width=640, frame_heigh
     # Record video and audio for the specified duration
     start_time = cv2.getTickCount()
     frames = []
-    while (cv2.getTickCount() - start_time) / cv2.getTickFrequency() < duration:
+    while (cv2.getTickCount() - start_time) / cv2.getTickFrequency() < duration and True:
         # Record video frame
         ret, frame = video_capture.read()
         if ret:
