@@ -1,0 +1,38 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Database
+instance/*.db
+*.db
+
+# Recorded media (generated at runtime)
+*.avi
+*.wav
+*.mp4
+
+# Flask
+instance/
+
+# IDEs
+.idea/
+.vscode/
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Migrations cache
+migrations/__pycache__/
+migrations/versions/__pycache__/
